@@ -1,5 +1,6 @@
-import logo from '../../assets/images/logo-header.png';
 import { getAppName } from '../webConfig';
+
+const logo = '/favicon.png';
 
 export function showDesktopNotification(title, tag, message) {
   if (!('Notification' in window)) {
