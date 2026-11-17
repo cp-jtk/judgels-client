@@ -12,7 +12,7 @@ const defaultPrefs = {
   showProblemTopicTags: undefined,
   statementLanguage: 'id',
   editorialLanguage: 'id',
-  gradingLanguage: 'Cpp20',
+  gradingLanguage: 'Cpp23',
 };
 
 function loadFromStorage() {
