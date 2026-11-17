@@ -29,6 +29,7 @@ h4,
 h5 {
   font-family: $accent-font !important;
   font-weight: $font-weight-heading !important;
+  letter-spacing: $letter-spacing-heading;
   margin: 0 0 10px;
 }
 
@@ -134,12 +135,16 @@ code,
 pre {
   background-color: $code-background-color;
   border: 1px solid $code-border-color;
-  border-radius: 4px;
+  border-radius: $radius-sm;
 
   .bp6-dark & {
     background-color: $dark-code-background-color;
     border-color: $dark-code-border-color;
   }
+}
+
+pre {
+  border-radius: $radius-lg;
 }
 
 code {
@@ -188,7 +193,14 @@ th {
 }
 
 blockquote {
-  border-left: 5px solid #eeeeee;
   padding: 10px 20px;
   margin: 0 0 20px;
+
+  .bp6-light & {
+    border-left: 2px solid $border-color;
+  }
+
+  .bp6-dark & {
+    border-left: 2px solid $dark-border-color;
+  }
 }

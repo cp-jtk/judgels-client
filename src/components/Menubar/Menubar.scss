@@ -15,32 +15,35 @@
     margin-right: 0;
     line-height: $header-height;
     height: $header-height;
-    color: $primary-color;
+    color: $secondary-text-color;
     white-space: nowrap;
     flex-shrink: 0;
+    background: transparent;
 
     a {
       display: block;
-      padding-left: 20px;
-      padding-right: 20px;
+      padding-left: 16px;
+      padding-right: 16px;
+      color: inherit;
     }
   }
 
   .bp6-tab:hover {
-    background-color: $tertiary-background-color;
+    color: $text-color;
+    background-color: transparent;
   }
 
   .bp6-tab[aria-selected='true'] {
     font-weight: $font-weight-bold;
-    background-color: $tertiary-background-color !important;
-    box-shadow: inset 0 -3px 0 $secondary-background-color;
+    background-color: transparent !important;
+    box-shadow: inset 0 -2px 0 $primary-color;
     color: $text-color;
   }
 }
 
 .bp6-dark .menubar {
   .bp6-tab {
-    color: inherit;
+    color: $dark-secondary-text-color;
 
     a:hover {
       color: $dark-text-color;
@@ -49,13 +52,13 @@
 
   .bp6-tab:hover {
     color: $dark-text-color;
-    background-color: $dark-tertiary-background-color;
+    background-color: transparent;
   }
 
   .bp6-tab[aria-selected='true'] {
-    background-color: $dark-tertiary-background-color !important;
-    color: inherit;
-    box-shadow: inset 0 -3px 0 $gray3;
+    background-color: transparent !important;
+    color: $dark-text-color;
+    box-shadow: inset 0 -2px 0 $dark-primary-color;
   }
 }
 

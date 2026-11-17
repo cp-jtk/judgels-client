@@ -2,14 +2,18 @@
 @use './variables/fonts' as *;
 @use './variables/layout' as *;
 
-// The bar that gives a card's heading its own space, separated from the content by the page color.
+// The bar that gives a card's heading its own space, separated by a hairline
+// border instead of a gap in the card's color.
 @mixin card-heading {
   min-height: 45px;
   padding: 12px $card-padding;
-  border-bottom: 1px solid $background-color;
+
+  .bp6-light & {
+    border-bottom: 1px solid $border-color;
+  }
 
   .bp6-dark & {
-    border-bottom-color: $dark-background-color;
+    border-bottom: 1px solid $dark-border-color;
   }
 
   .card-heading__title {

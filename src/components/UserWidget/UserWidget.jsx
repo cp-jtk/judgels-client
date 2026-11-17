@@ -47,7 +47,7 @@ export function UserWidget({ user, profile, items, homeRoute }) {
               {profile.username}
             </span>
           </span>{' '}
-          <ChevronDown color="#252627" />
+          <ChevronDown className="user-widget__chevron" />
         </div>
       </Popover>
     );

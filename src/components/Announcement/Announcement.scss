@@ -3,12 +3,20 @@
 .bp6-navbar.announcement {
   height: auto;
   padding: 8px 16px;
-  background-color: #394b59;
+  background-color: $primary-color;
+
+  .bp6-dark & {
+    background-color: $dark-card-background-color;
+  }
 }
 
 .announcement__text {
-  color: white;
+  color: $primary-contrast-color;
   font-size: $font-size;
+
+  .bp6-dark & {
+    color: $dark-text-color;
+  }
 
   p {
     margin: 0;

@@ -55,7 +55,7 @@ export default function ContestUserProblemSubmissionsDialog({ userJid, problemJi
     }
 
     return submissions.map((submission, idx) => (
-      <ContentCard key={submission.id}>
+      <ContentCard framed key={submission.id}>
         <details open={idx === 0}>
           <summary>
             <h5>

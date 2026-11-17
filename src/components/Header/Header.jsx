@@ -3,7 +3,6 @@ import { Box, Flex } from '@blueprintjs/labs';
 import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import logo from '../../assets/images/logo-header.png';
 import { getAppName, getAppSlogan } from '../../modules/webConfig';
 import DarkModeWidget from '../DarkModeWidget/DarkModeWidget';
 import Menubar from '../Menubar/Menubar';
@@ -39,7 +38,8 @@ export default function Header({ items, homeRoute }) {
       <Flex>
         <Flex className="header__left" gap={4} alignItems="center">
           <Link to="/">
-            <img src={logo} alt="header" className="header__logo" />
+            <img src="/jtk-polban-light.png" alt="" className="header__logo header__logo--on-dark" />
+            <img src="/jtk-polban-dark.png" alt="" className="header__logo header__logo--on-light" />
           </Link>
           <Flex className="header__name" flexDirection="column">
             <div className="header__title">{getAppName()}</div>

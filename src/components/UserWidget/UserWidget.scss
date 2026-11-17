@@ -1,7 +1,7 @@
 @use '../../styles/base' as *;
 
 .user-widget__profile {
-  border-radius: 10px;
+  border-radius: $radius-lg;
   padding-left: 10px;
   padding-right: 10px;
   height: 30px;
@@ -9,16 +9,28 @@
   vertical-align: middle !important;
 
   .bp6-light & {
-    background-color: #f4f5f6;
+    background-color: $surface-color;
   }
 
   .bp6-dark & {
-    background-color: $dark-background-color;
+    background-color: $dark-surface-color;
   }
 
   svg {
+    fill: currentColor;
     vertical-align: middle !important;
   }
+}
+
+// The chevron inherits the profile chip's text color, so it stays visible on
+// both themes, and reads as part of the label.
+.user-widget__chevron {
+  fill: currentColor;
+  opacity: 0.6;
+}
+
+.user-widget__profile:hover .user-widget__chevron {
+  opacity: 1;
 }
 
 .bp6-menu li,

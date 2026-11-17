@@ -20,10 +20,10 @@
   }
 
   &:not(.bp6-breadcrumb-current):hover {
-    color: $primary-color;
+    color: $link-color;
 
     .bp6-dark & {
-      color: $dark-link-color;
+      color: $dark-info-color;
     }
   }
 }

@@ -1,22 +1,39 @@
 @use '../../styles/base' as *;
 
+// A minimal button, so that it stays visible on both the light and the dark
+// header: muted by default, full contrast on hover.
 .bp6-button.dark-mode-widget__button {
+  color: $secondary-text-color !important;
   background-color: transparent !important;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: $text-color !important;
+    background-color: $tertiary-background-color !important;
   }
 
   &:active {
-    background-color: rgba(255, 255, 255, 0.25) !important;
+    background-color: $secondary-background-color !important;
   }
 
   &:focus:not(:focus-visible) {
     outline: none;
   }
 
-  .bp6-light & .bp6-icon {
-    color: white;
+  .bp6-icon {
+    color: inherit !important;
+  }
+
+  .bp6-dark & {
+    color: $dark-secondary-text-color !important;
+
+    &:hover {
+      color: $dark-text-color !important;
+      background-color: $dark-tertiary-background-color !important;
+    }
+
+    &:active {
+      background-color: $dark-secondary-background-color !important;
+    }
   }
 }
 

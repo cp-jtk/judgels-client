@@ -33,9 +33,21 @@
     }
 
     th {
-      background-color: #eeeeee;
+      background-color: $secondary-background-color;
       font-weight: $font-weight-strong;
       color: $text-color;
+
+      .bp6-dark & {
+        background-color: $dark-surface-color;
+        color: $dark-text-color;
+      }
+    }
+
+    .bp6-dark & {
+      td,
+      th {
+        border-color: $dark-code-border-color;
+      }
     }
   }
 
@@ -50,23 +62,24 @@
 
   .spoiler {
     margin-top: 5px;
-    background-color: #f8f8f8;
+    background-color: #ebebeb;
     padding: 10px;
-    border: 2px dashed #e7e7e7;
-    border-radius: 5px;
+    border: 1px dashed $border-color;
+    border-radius: $radius-lg;
     cursor: pointer;
     font-family: $accent-font;
     font-weight: $font-weight-bold;
 
     .bp6-dark & {
-      background-color: $dark-secondary-background-color;
+      background-color: $dark-surface-color;
+      border-color: $dark-border-color;
     }
 
     &:hover {
       background-color: #e7e7e7;
 
       .bp6-dark & {
-        background-color: $dark-background-color;
+        background-color: $dark-surface-color;
       }
     }
 
@@ -82,12 +95,12 @@
   }
 
   .highlight {
-    background-color: #ffe39f;
+    background-color: #ebebeb;
     margin-left: -$card-padding;
     margin-right: -$card-padding;
     margin-bottom: $card-padding;
     padding: 10px $card-padding;
-    border-radius: 3px;
+    border-radius: $radius-lg;
     overflow-x: auto;
 
     .bp6-dark & {
