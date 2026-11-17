@@ -120,31 +120,44 @@ table.bundle-scoreboard__content td strong {
 .bp6-dark table.scoreboard__content {
   .my-rank,
   .my-rank td {
-    background-color: $dark-gray1 !important;
+    background-color: $dark-surface-color !important;
   }
 
   th span.bottom {
-    color: #a7b6c2 !important;
+    color: $dark-secondary-text-color !important;
   }
 
   td span.bottom {
     color: $dark-secondary-text-color !important;
   }
 
-  td.first-accepted,
-  td.not-accepted,
-  td.frozen {
+  td.accepted {
+    background: rgba($dark-success-color, 0.22) !important;
+    color: $dark-text-color !important;
+
     span.bottom {
-      color: inherit !important;
+      color: $dark-secondary-text-color !important;
     }
   }
 
-  td.accepted {
-    background: $accepted-color !important;
-    color: $dark-background-color !important;
+  td.first-accepted {
+    background: #1f8763 !important;
+  }
 
+  td.not-accepted {
+    background: #e36262 !important;
+  }
+
+  td.frozen {
+    background: #70a2ff !important;
+  }
+
+  td.first-accepted,
+  td.not-accepted,
+  td.frozen {
+    span.top,
     span.bottom {
-      color: $gray2 !important;
+      color: #fff !important;
     }
   }
 }

@@ -6,11 +6,13 @@
   padding-bottom: 20px;
 
   .bp6-light & {
-    background-color: $primary-color;
+    background-color: $surface-color;
+    border-bottom: 1px solid $border-color;
   }
 
   .bp6-dark & {
     background-color: $dark-card-background-color;
+    border-bottom: 1px solid $dark-border-color;
   }
 }
 
@@ -20,7 +22,9 @@
 }
 
 .home-banner__text {
-  color: white !important;
+  .bp6-light & {
+    color: $text-color !important;
+  }
 
   .bp6-dark & {
     color: $dark-text-color !important;
