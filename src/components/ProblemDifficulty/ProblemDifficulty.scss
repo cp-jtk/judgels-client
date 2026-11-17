@@ -1,0 +1,13 @@
+@use '../../styles/base' as *;
+
+.problem-difficulty {
+  > span {
+    margin-top: 10px;
+    margin-right: 5px;
+  }
+}
+
+.problem-difficulty--large {
+  font-weight: $font-weight-strong;
+  font-size: $font-size-large;
+}

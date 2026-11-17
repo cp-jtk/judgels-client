@@ -1,0 +1,89 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useLocation } from '@tanstack/react-router';
+
+import { Card } from '../../../components/Card/Card';
+import CursorPagination from '../../../components/CursorPagination/CursorPagination';
+import { LoadingState } from '../../../components/LoadingState/LoadingState';
+import SubmissionUserFilter from '../../../components/SubmissionUserFilter/SubmissionUserFilter';
+import {
+  regradeTrainingSubmissionMutationOptions,
+  trainingSubmissionsQueryOptions,
+} from '../../../modules/queries/trainingSubmission';
+import { useSession } from '../../../modules/session';
+import { SubmissionsTable } from '../SubmissionsTable/SubmissionsTable';
+
+import * as toastActions from '../../../modules/toast/toastActions';
+
+export default function SubmissionsPage() {
+  const location = useLocation();
+  const { user } = useSession();
+  const userJid = user?.jid;
+  const username = user?.username;
+
+  const beforeId = location.search.before;
+  const afterId = location.search.after;
+  const isUserFilterMine = (location.pathname + '/').includes('/mine/');
+  const usernameFilter = isUserFilterMine ? username : undefined;
+
+  const { data: response } = useQuery(trainingSubmissionsQueryOptions({ username: usernameFilter, beforeId, afterId }));
+
+  const regradeMutation = useMutation(regradeTrainingSubmissionMutationOptions());
+
+  const onRegrade = submissionJid => {
+    regradeMutation.mutate(submissionJid, {
+      onSuccess: () => {
+        toastActions.showSuccessToast('Submission regraded.');
+      },
+    });
+  };
+
+  const renderSubmissions = () => {
+    if (!response) {
+      return <LoadingState />;
+    }
+
+    const {
+      data: submissions,
+      config,
+      profilesMap,
+      problemAliasesMap,
+      problemNamesMap,
+      containerNamesMap,
+      containerPathsMap,
+    } = response;
+    if (submissions.page.length === 0) {
+      return (
+        <p>
+          <small>No submissions.</small>
+        </p>
+      );
+    }
+
+    return (
+      <SubmissionsTable
+        submissions={submissions.page}
+        canManage={config.canManage}
+        profilesMap={profilesMap}
+        problemAliasesMap={problemAliasesMap}
+        problemNamesMap={problemNamesMap}
+        containerNamesMap={containerNamesMap}
+        containerPathsMap={containerPathsMap}
+        onRegrade={onRegrade}
+      />
+    );
+  };
+
+  return (
+    <Card title="Submissions" fullHeight>
+      {userJid && <SubmissionUserFilter />}
+      {renderSubmissions()}
+      {response && (
+        <CursorPagination
+          data={response.data.page}
+          hasPreviousPage={response.data.hasPreviousPage}
+          hasNextPage={response.data.hasNextPage}
+        />
+      )}
+    </Card>
+  );
+}

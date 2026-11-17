@@ -1,0 +1,48 @@
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
+
+import { LoadingState } from '../../../../../../../components/LoadingState/LoadingState';
+import { sendGAEvent } from '../../../../../../../ga';
+import { ProblemType } from '../../../../../../../modules/api/problem';
+import { problemSetBySlugQueryOptions } from '../../../../../../../modules/queries/problemSet';
+import {
+  problemSetProblemQueryOptions,
+  problemSetProblemWorksheetQueryOptions,
+} from '../../../../../../../modules/queries/problemSetProblem';
+import { useWebPrefs } from '../../../../../../../modules/webPrefs';
+import BundleProblemStatementPage from './Bundle/ProblemStatementPage/ProblemStatementPage';
+import ProgrammingProblemStatementPage from './Programming/ProblemStatementPage/ProblemStatementPage';
+
+export default function ProblemStatementPage() {
+  const { problemSetSlug, problemAlias } = useParams({ strict: false });
+  const { data: problemSet } = useSuspenseQuery(problemSetBySlugQueryOptions(problemSetSlug));
+  const { data: problem } = useSuspenseQuery(problemSetProblemQueryOptions(problemSet.jid, problemAlias));
+  const { statementLanguage } = useWebPrefs();
+
+  const { data: response } = useQuery(
+    problemSetProblemWorksheetQueryOptions(problemSet.jid, problem.alias, { language: statementLanguage })
+  );
+
+  useEffect(() => {
+    if (response) {
+      sendGAEvent({ category: 'Problems', action: 'View problemset problem', label: problemSet.name });
+      sendGAEvent({
+        category: 'Problems',
+        action: 'View problem',
+        label: problemSet.name + ': ' + problem.alias,
+      });
+    }
+  }, [response]);
+
+  if (!response) {
+    return <LoadingState />;
+  }
+
+  const { problem: problemData } = response;
+  if (problemData.type === ProblemType.Programming) {
+    return <ProgrammingProblemStatementPage worksheet={response} />;
+  } else {
+    return <BundleProblemStatementPage worksheet={response} />;
+  }
+}

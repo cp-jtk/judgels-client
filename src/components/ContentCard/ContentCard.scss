@@ -1,0 +1,42 @@
+@use '../../styles/base' as *;
+
+.content-card {
+  overflow-x: auto;
+}
+
+.content-card--compact.bp6-card {
+  padding: 12px;
+}
+
+.content-card .content-card.bp6-card:not(.content-card--framed),
+.card .content-card.bp6-card:not(.content-card--framed) {
+  padding: 0;
+  overflow: visible;
+  background: none;
+  box-shadow: none;
+}
+
+.bp6-dark .content-card .content-card--framed,
+.bp6-dark .card .content-card--framed {
+  box-shadow: 0 0 0 0.5px $dark-secondary-background-color !important;
+}
+
+.content-card--page-section {
+  > .content-card__heading {
+    @include card-heading;
+  }
+
+  // Holds the card's padding, because the rows of a ContentList reach into it and this scroll area would clip them.
+  > .content-card__body {
+    padding: $card-padding;
+    overflow-x: auto;
+  }
+
+  & + & > .content-card__heading {
+    border-top: 1px solid $background-color;
+
+    .bp6-dark & {
+      border-top-color: $dark-background-color;
+    }
+  }
+}

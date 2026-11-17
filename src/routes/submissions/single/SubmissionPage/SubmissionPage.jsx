@@ -1,0 +1,58 @@
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
+
+import { BreadcrumbTitle } from '../../../../components/BreadcrumbTitle/BreadcrumbTitle';
+import { Card } from '../../../../components/Card/Card';
+import { LoadingState } from '../../../../components/LoadingState/LoadingState';
+import { SubmissionDetails } from '../../../../components/SubmissionDetails/Programming/SubmissionDetails';
+import { constructProblemUrl } from '../../../../modules/api/submission';
+import { trainingSubmissionWithSourceByIdQueryOptions } from '../../../../modules/queries/trainingSubmission';
+import { useWebPrefs } from '../../../../modules/webPrefs';
+import { createDocumentTitle } from '../../../../utils/title';
+
+export default function SubmissionPage() {
+  const { submissionId } = useParams({ strict: false });
+  const { statementLanguage } = useWebPrefs();
+
+  const { data: response } = useQuery(
+    trainingSubmissionWithSourceByIdQueryOptions(+submissionId, { language: statementLanguage })
+  );
+
+  useEffect(() => {
+    if (response) {
+      const { data } = response;
+      document.title = createDocumentTitle(`Submission #${data.submission.id}`);
+    }
+  }, [response]);
+
+  const renderSubmission = () => {
+    if (!response) {
+      return <LoadingState />;
+    }
+
+    const { data: submissionWithSource, profile, problemName, problemAlias, containerPath, containerName } = response;
+
+    return (
+      <SubmissionDetails
+        submission={submissionWithSource.submission}
+        source={submissionWithSource.source}
+        reasonNotAllowedToViewSource={submissionWithSource.reasonNotAllowedToViewSource}
+        profile={profile}
+        problemName={problemName}
+        problemAlias={problemAlias}
+        problemUrl={`${constructProblemUrl(containerPath, problemAlias)}`}
+        containerName={containerName}
+      />
+    );
+  };
+
+  return (
+    <Card
+      title={<BreadcrumbTitle items={[{ text: 'Submissions', to: '/submissions' }, { text: `#${submissionId}` }]} />}
+      fullHeight
+    >
+      {renderSubmission()}
+    </Card>
+  );
+}

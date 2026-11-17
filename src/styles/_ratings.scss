@@ -1,0 +1,52 @@
+@use './base' as *;
+
+@mixin rating($color, $dark-color: $color) {
+  color: $color !important;
+  font-weight: $font-weight-strong;
+
+  .bp6-dark & {
+    color: $dark-color !important;
+  }
+}
+
+.rating-unrated {
+  @include rating($text-color, $dark-text-color);
+  font-weight: $font-weight-bold;
+}
+
+.rating-gray {
+  @include rating(#b7b7b7, #738694);
+}
+
+.rating-green {
+  @include rating(#70ad47);
+}
+
+.rating-blue {
+  @include rating(#3c78d8, #39ace7);
+}
+
+.rating-purple {
+  @include rating(#7030a0, #cc99cd);
+}
+
+.rating-orange {
+  @include rating(#f6b26b);
+}
+
+.rating-red {
+  @include rating(#ff0000, #ff4545);
+}
+
+.rating-legend {
+  font-weight: $font-weight-strong;
+  background: linear-gradient(0deg, #bb0000 0%, #bb0000 50%, #000000 51%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  .bp6-dark & {
+    background: linear-gradient(0deg, #ff4545 0%, #ff4545 50%, #f5f8fa 51%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

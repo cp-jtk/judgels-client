@@ -1,0 +1,16 @@
+@use '../../styles/base' as *;
+
+pre.source-code {
+  background-color: $code-background-color !important;
+  overflow-y: auto !important;
+
+  .bp6-light & {
+    .token {
+      background-color: inherit !important;
+    }
+  }
+
+  .bp6-dark & {
+    background-color: $dark-code-background-color !important;
+  }
+}

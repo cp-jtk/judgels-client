@@ -1,0 +1,86 @@
+import { queryOptions } from '@tanstack/react-query';
+
+import { ContestErrors, contestAPI } from '../api/contest';
+import { BadRequestError } from '../api/error';
+import { SubmissionError } from '../form/submissionError';
+import { contestContestantsQueryOptions } from '../queries/contestContestant';
+import { contestWebConfigQueryOptions } from '../queries/contestWeb';
+import { queryClient } from '../queryClient';
+import { getToken } from '../session';
+
+export const contestsQueryOptions = params => {
+  const { name, page } = params || {};
+  return queryOptions({
+    queryKey: ['contests', ...(params ? [params] : [])],
+    queryFn: () => contestAPI.getContests(getToken(), name, page),
+  });
+};
+
+export const createContestMutationOptions = () => ({
+  mutationFn: async data => {
+    try {
+      await contestAPI.createContest(getToken(), data);
+    } catch (error) {
+      if (error instanceof BadRequestError && error.message === ContestErrors.SlugAlreadyExists) {
+        throw new SubmissionError({ slug: 'Slug already exists' });
+      }
+      throw error;
+    }
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries(contestsQueryOptions());
+  },
+});
+
+export const updateContestMutationOptions = (contestJid, contestSlug) => ({
+  mutationFn: async data => {
+    try {
+      await contestAPI.updateContest(getToken(), contestJid, data);
+    } catch (error) {
+      if (error instanceof BadRequestError && error.message === ContestErrors.SlugAlreadyExists) {
+        throw new SubmissionError({ slug: 'Slug already exists' });
+      }
+      throw error;
+    }
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries(contestBySlugQueryOptions(contestSlug));
+    queryClient.invalidateQueries(contestWebConfigQueryOptions(contestJid));
+  },
+});
+
+export const activeContestsQueryOptions = () =>
+  queryOptions({
+    queryKey: ['contests', 'active'],
+    queryFn: () => contestAPI.getActiveContests(getToken()),
+  });
+
+export const contestBySlugQueryOptions = contestSlug =>
+  queryOptions({
+    queryKey: ['contest-by-slug', contestSlug],
+    queryFn: () => contestAPI.getContestBySlug(getToken(), contestSlug),
+  });
+
+export const contestDescriptionQueryOptions = contestJid =>
+  queryOptions({
+    queryKey: ['contest', contestJid, 'description'],
+    queryFn: () => contestAPI.getContestDescription(getToken(), contestJid),
+  });
+
+export const updateContestDescriptionMutationOptions = contestJid => ({
+  mutationFn: description => contestAPI.updateContestDescription(getToken(), contestJid, { description }),
+  onSuccess: () => {
+    queryClient.invalidateQueries(contestDescriptionQueryOptions(contestJid));
+  },
+});
+
+export const startVirtualContestMutationOptions = contestJid => ({
+  mutationFn: () => contestAPI.startVirtualContest(getToken(), contestJid),
+});
+
+export const resetVirtualContestMutationOptions = contestJid => ({
+  mutationFn: () => contestAPI.resetVirtualContest(getToken(), contestJid),
+  onSuccess: () => {
+    queryClient.invalidateQueries(contestContestantsQueryOptions(contestJid));
+  },
+});

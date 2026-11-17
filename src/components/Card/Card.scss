@@ -1,0 +1,25 @@
+@use '../../styles/base' as *;
+
+.bp6-card.card {
+  padding: 0;
+}
+
+.card__title {
+  @include card-heading;
+}
+
+.card__content {
+  padding: $card-padding;
+  border-radius: inherit;
+  overflow-x: auto;
+}
+
+.card--full-height {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--app-page-min-height);
+
+  .card__content {
+    flex-grow: 1;
+  }
+}

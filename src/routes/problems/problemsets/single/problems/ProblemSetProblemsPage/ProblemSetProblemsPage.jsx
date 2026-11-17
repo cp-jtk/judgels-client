@@ -1,0 +1,95 @@
+import { Flex } from '@blueprintjs/labs';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+
+import { ContentCard } from '../../../../../../components/ContentCard/ContentCard';
+import { ContentList } from '../../../../../../components/ContentList/ContentList';
+import { LoadingContentRow } from '../../../../../../components/ContentRow/LoadingContentRow';
+import StatementLanguageWidget from '../../../../../../components/LanguageWidget/StatementLanguageWidget';
+import { ProblemSetProblemCard } from '../../../../../../components/ProblemSetProblemCard/ProblemSetProblemCard';
+import ProblemSpoilerWidget from '../../../../../../components/ProblemSpoilerWidget/ProblemSpoilerWidget';
+import { consolidateLanguages } from '../../../../../../modules/api/language';
+import { getProblemName } from '../../../../../../modules/api/problem';
+import { problemSetBySlugQueryOptions } from '../../../../../../modules/queries/problemSet';
+import { problemSetProblemsQueryOptions } from '../../../../../../modules/queries/problemSetProblem';
+import { useWebPrefs } from '../../../../../../modules/webPrefs';
+
+export default function ProblemSetProblemsPage() {
+  const { problemSetSlug } = useParams({ strict: false });
+  const { data: problemSet } = useSuspenseQuery(problemSetBySlugQueryOptions(problemSetSlug));
+  const { statementLanguage } = useWebPrefs();
+
+  const { data: response } = useQuery(problemSetProblemsQueryOptions(problemSet.jid));
+
+  const renderHeader = () => {
+    return (
+      <>
+        <Flex justifyContent="space-between" alignItems="center" marginBottom={3}>
+          <div>{renderProblemSpoilerWidget()}</div>
+          <div>{renderStatementLanguageWidget()}</div>
+        </Flex>
+      </>
+    );
+  };
+
+  const renderProblemSpoilerWidget = () => {
+    return <ProblemSpoilerWidget />;
+  };
+
+  const renderStatementLanguageWidget = () => {
+    if (!response) {
+      return null;
+    }
+    const { defaultLanguage, uniqueLanguages } = consolidateLanguages(response.problemsMap, statementLanguage);
+    if (!defaultLanguage || !uniqueLanguages) {
+      return null;
+    }
+
+    const props = {
+      defaultLanguage,
+      statementLanguages: uniqueLanguages,
+    };
+    return <StatementLanguageWidget {...props} />;
+  };
+
+  const renderProblems = () => {
+    if (!response) {
+      return <LoadingContentRow />;
+    }
+
+    const { data: problems, problemsMap, problemMetadatasMap, problemDifficultiesMap, problemProgressesMap } = response;
+    const { defaultLanguage } = consolidateLanguages(problemsMap, statementLanguage);
+
+    if (problems.length === 0) {
+      return (
+        <p>
+          <small>No problems.</small>
+        </p>
+      );
+    }
+
+    return (
+      <ContentList>
+        {problems.map(problem => {
+          const props = {
+            problemSet,
+            problem,
+            showAlias: true,
+            problemName: getProblemName(problemsMap[problem.problemJid], defaultLanguage),
+            metadata: problemMetadatasMap[problem.problemJid],
+            difficulty: problemDifficultiesMap[problem.problemJid],
+            progress: problemProgressesMap[problem.problemJid],
+          };
+          return <ProblemSetProblemCard key={problem.problemJid} {...props} />;
+        })}
+      </ContentList>
+    );
+  };
+
+  return (
+    <ContentCard title="Problems">
+      {renderHeader()}
+      {renderProblems()}
+    </ContentCard>
+  );
+}

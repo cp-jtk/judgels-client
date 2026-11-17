@@ -1,0 +1,48 @@
+import { queryOptions } from '@tanstack/react-query';
+
+import { ContestErrors } from '../api/contest';
+import { contestProblemAPI } from '../api/contestProblem';
+import { ForbiddenError } from '../api/error';
+import { SubmissionError } from '../form/submissionError';
+import { queryClient } from '../queryClient';
+import { getToken } from '../session';
+
+export const contestProblemsQueryOptions = contestJid => {
+  return queryOptions({
+    queryKey: ['contest', contestJid, 'problems'],
+    queryFn: () => contestProblemAPI.getProblems(getToken(), contestJid),
+  });
+};
+
+export const setContestProblemsMutationOptions = contestJid => ({
+  mutationFn: async data => {
+    try {
+      await contestProblemAPI.setProblems(getToken(), contestJid, data);
+    } catch (error) {
+      if (error instanceof ForbiddenError && error.message === ContestErrors.ProblemSlugsNotAllowed) {
+        const unknownSlugs = error.args.slugs;
+        throw new SubmissionError({ problems: 'Problems not found/allowed: ' + unknownSlugs });
+      }
+      throw error;
+    }
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries(contestProblemsQueryOptions(contestJid));
+  },
+});
+
+export const contestProgrammingProblemWorksheetQueryOptions = (contestJid, problemAlias, params) => {
+  const { language } = params || {};
+  return queryOptions({
+    queryKey: ['contest', contestJid, 'problem', problemAlias, 'programming', 'worksheet', ...(params ? [params] : [])],
+    queryFn: () => contestProblemAPI.getProgrammingProblemWorksheet(getToken(), contestJid, problemAlias, language),
+  });
+};
+
+export const contestBundleProblemWorksheetQueryOptions = (contestJid, problemAlias, params) => {
+  const { language } = params || {};
+  return queryOptions({
+    queryKey: ['contest', contestJid, 'problem', problemAlias, 'bundle', 'worksheet', ...(params ? [params] : [])],
+    queryFn: () => contestProblemAPI.getBundleProblemWorksheet(getToken(), contestJid, problemAlias, language),
+  });
+};

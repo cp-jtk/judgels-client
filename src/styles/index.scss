@@ -1,0 +1,361 @@
+@use '../../node_modules/reset-css/reset.css';
+@use '../../node_modules/normalize.css/normalize.css';
+@use '../../node_modules/@blueprintjs/core/lib/css/blueprint.css';
+@use '../../node_modules/@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+@use '../../node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css';
+@use '../../node_modules/@blueprintjs/labs/lib/css/blueprint-labs.css';
+@use '../../node_modules/@blueprintjs/select/lib/css/blueprint-select.css';
+
+@use './base' as *;
+@use './table';
+@use './ratings';
+@use './content';
+
+body {
+  font-family: $primary-font;
+  background-color: $background-color;
+
+  .bp6-dark {
+    background-color: $dark-background-color !important;
+  }
+}
+
+.bp6-light {
+  &,
+  td,
+  th,
+  table.bp6-html-table td,
+  table.bp6-html-table th,
+  label,
+  label.bp6-label,
+  .bp6-control,
+  .bp6-input,
+  .bp6-heading,
+  .bp6-dialog,
+  .bp6-breadcrumb-current {
+    color: $text-color;
+  }
+}
+
+.bp6-dark {
+  &,
+  td,
+  th,
+  table.bp6-html-table td,
+  table.bp6-html-table th,
+  label,
+  label.bp6-label,
+  .bp6-control,
+  .bp6-input,
+  .bp6-heading,
+  .bp6-dialog,
+  .bp6-tag.bp6-intent-primary,
+  .bp6-breadcrumb-current {
+    color: $dark-text-color;
+  }
+}
+
+// Low specificity, so that Blueprint's selected and hover colors still win.
+.bp6-tab:where(:not([aria-selected='true'])) {
+  .bp6-light & {
+    color: $text-color;
+  }
+
+  .bp6-dark & {
+    color: $dark-text-color;
+  }
+}
+
+label:not(.bp6-control) {
+  font-size: $font-size-label;
+  font-weight: $font-weight-bold;
+}
+
+.bp6-switch {
+  font-size: $font-size-small;
+}
+
+button {
+  font-family: $primary-font;
+}
+
+input:not([type='checkbox']):not([type='radio']) {
+  font-family: $primary-font;
+  width: 100%;
+  height: $control-height !important;
+  border-radius: 2px;
+}
+
+select {
+  width: 100%;
+}
+
+table.bp6-html-table {
+  td,
+  th {
+    vertical-align: middle;
+  }
+}
+
+/* Blueprint overrides */
+
+.toast {
+  margin-top: $header-height;
+}
+
+.bp6-intent-primary {
+  &.bp6-button,
+  &.bp6-tag {
+    background-color: $primary-color;
+  }
+}
+
+.bp6-intent-warning {
+  &.bp6-button,
+  &.bp6-tag,
+  &.bp6-toast,
+  &.bp6-toast .bp6-icon,
+  &.bp6-toast .bp6-button,
+  &.bp6-toast .bp6-button svg {
+    color: #fff !important;
+  }
+
+  &.bp6-toast .bp6-button:hover svg {
+    background-color: inherit !important;
+  }
+}
+
+.bp6-intent-warning:not(.bp6-disabled) {
+  &:not(:hover).bp6-button,
+  &.bp6-tag,
+  &.bp6-toast,
+  &.bp6-toast .bp6-icon,
+  &.bp6-toast .bp6-button,
+  &.bp6-toast .bp6-button svg {
+    background-color: #d9822b !important;
+  }
+}
+
+.bp6-button:not([class*='bp6-intent-']) {
+  .bp6-light & {
+    color: $text-color;
+  }
+
+  .bp6-dark & {
+    color: $dark-text-color;
+  }
+
+  .bp6-dark &:not(.bp6-minimal) {
+    background-color: $dark-background-color;
+  }
+
+  .bp6-dark &:not(.bp6-minimal):not(.bp6-active):hover {
+    background-color: $dark-tertiary-background-color;
+  }
+
+  .bp6-dark &:not(.bp6-minimal):active {
+    background-color: $dark-background-color;
+  }
+
+  .bp6-dark &.bp6-active {
+    color: $dark-text-color;
+    background-color: #25323b;
+  }
+
+  .bp6-dark &.bp6-outlined {
+    border-color: $pt-dark-divider-white-muted;
+  }
+
+  .bp6-dark &:not(.bp6-minimal).bp6-disabled {
+    background-color: $dark-background-color;
+  }
+}
+
+// Blueprint stacks a focused button below an active one: https://github.com/palantir/blueprint/issues/6889
+.bp6-button-group .bp6-button:focus-visible {
+  z-index: 13 !important;
+}
+
+.bp6-callout {
+  padding: 10px 12px 9px;
+
+  .bp6-dark &:not([class*='bp6-intent-']) {
+    background-color: $dark-tertiary-background-color;
+  }
+
+  &.bp6-callout-icon > .bp6-icon:first-child {
+    top: 12px;
+  }
+
+  &.bp6-intent-primary {
+    color: inherit;
+    background-color: rgba(19, 124, 189, 0.15);
+
+    .bp6-dark & {
+      color: unset;
+      background-color: $dark-blue-secondary-background-color;
+    }
+
+    a.bp6-button {
+      text-decoration: none;
+    }
+  }
+}
+
+table.bp6-html-table.bp6-html-table-striped tbody tr:nth-child(odd) td {
+  background-color: rgba(191, 204, 214, 0.15);
+
+  .bp6-dark & {
+    background-color: rgba(92, 112, 128, 0.15);
+  }
+}
+
+.bp6-card {
+  .bp6-light & {
+    background-color: $card-background-color;
+  }
+
+  .bp6-dark & {
+    background-color: $dark-card-background-color;
+    box-shadow:
+      0 0 0 1px rgba(16, 22, 26, 0.4),
+      0 0 0 rgba(16, 22, 26, 0),
+      0 0 0 rgba(16, 22, 26, 0);
+  }
+}
+
+textarea.bp6-input {
+  resize: vertical;
+}
+
+.bp6-dialog {
+  background-color: rgb(235, 241, 245);
+
+  .bp6-dark & {
+    background-color: $dark-card-background-color;
+  }
+}
+
+.bp6-dialog-header {
+  // Blueprint renders the dialog title as an h2.
+  .bp6-heading {
+    font-size: $font-size-large !important;
+  }
+
+  .bp6-dark & {
+    background-color: $dark-tertiary-background-color;
+  }
+
+  .bp6-dark & .bp6-button {
+    background-color: $dark-tertiary-background-color;
+  }
+}
+
+.bp6-menu {
+  .bp6-light & {
+    color: $text-color;
+  }
+
+  .bp6-dark & {
+    color: $dark-text-color;
+    background-color: $dark-background-color;
+  }
+}
+
+.bp6-select-popover {
+  .bp6-dark & .bp6-popover-content,
+  &.bp6-dark .bp6-popover-content {
+    background-color: $dark-background-color;
+  }
+
+  &.bp6-dark .bp6-popover-arrow-fill {
+    fill: $dark-background-color;
+  }
+}
+
+.bp6-menu-item.bp6-active {
+  .bp6-dark & {
+    color: inherit;
+    background-color: $dark-blue-secondary-background-color;
+  }
+}
+
+.bp6-popover {
+  .bp6-dark & {
+    box-shadow:
+      0 0 0 1px rgba(17, 20, 24, 0.1),
+      0 2px 4px rgba(17, 20, 24, 0.2),
+      0 8px 24px rgba(17, 20, 24, 0.2);
+  }
+
+  .bp6-dark & .bp6-popover-arrow-fill {
+    fill: $dark-background-color;
+  }
+
+  .bp6-dark & .bp6-popover-arrow-border {
+    fill: $dark-background-color;
+    fill-opacity: 1;
+  }
+}
+
+.bp6-tag {
+  .bp6-dark &:not([class*='bp6-intent-']) {
+    background-color: #c5cbd3;
+    color: #1c2127;
+  }
+}
+
+.bp6-file-upload-input::after {
+  .bp6-dark & {
+    color: $dark-text-color;
+    background-color: $dark-background-color;
+  }
+
+  .bp6-dark &:hover {
+    background-color: $dark-background-color;
+  }
+}
+
+/* End Blueprint overrides */
+
+.secondary-info {
+  font-family: $accent-font;
+}
+
+.multiline-text {
+  white-space: pre-wrap;
+}
+
+.normal-weight {
+  font-weight: normal !important;
+}
+
+.statement-width {
+  max-width: $statement-width;
+}
+
+.col-fit {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.col-narrow {
+  width: 50px;
+}
+
+.col-medium {
+  width: 150px;
+}
+
+.col-wide {
+  width: 200px;
+}
+
+.col-key {
+  width: 250px;
+}
+
+.bp6-overlay-start-focus-trap,
+.bp6-overlay-end-focus-trap {
+  outline: none;
+}

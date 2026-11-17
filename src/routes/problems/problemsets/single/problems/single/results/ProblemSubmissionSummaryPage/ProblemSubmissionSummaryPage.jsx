@@ -1,0 +1,100 @@
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useLocation, useParams } from '@tanstack/react-router';
+
+import { ContentCard } from '../../../../../../../../components/ContentCard/ContentCard';
+import { LoadingState } from '../../../../../../../../components/LoadingState/LoadingState';
+import { SubmissionDetails } from '../../../../../../../../components/SubmissionDetails/Bundle/SubmissionDetails';
+import { ItemSubmissionUserFilter } from '../../../../../../../../components/SubmissionUserFilter/SubmissionUserFilter';
+import { UserRef } from '../../../../../../../../components/UserRef/UserRef';
+import { problemSetBySlugQueryOptions } from '../../../../../../../../modules/queries/problemSet';
+import { problemSetProblemQueryOptions } from '../../../../../../../../modules/queries/problemSetProblem';
+import {
+  problemSetItemSubmissionSummaryQueryOptions,
+  regradeProblemSetItemSubmissionsMutationOptions,
+} from '../../../../../../../../modules/queries/trainingItemSubmission';
+import { useSession } from '../../../../../../../../modules/session';
+import { useWebPrefs } from '../../../../../../../../modules/webPrefs';
+
+import * as toastActions from '../../../../../../../../modules/toast/toastActions';
+
+export default function ProblemSubmissionSummaryPage() {
+  const { problemSetSlug, problemAlias, username } = useParams({ strict: false });
+  const location = useLocation();
+  const { user } = useSession();
+  const userJid = user?.jid;
+  const { data: problemSet } = useSuspenseQuery(problemSetBySlugQueryOptions(problemSetSlug));
+  const { data: problem } = useSuspenseQuery(problemSetProblemQueryOptions(problemSet.jid, problemAlias));
+  const { statementLanguage: language } = useWebPrefs();
+
+  const { data: response } = useQuery({
+    ...problemSetItemSubmissionSummaryQueryOptions(problemSet.jid, {
+      problemJid: problem.problemJid,
+      username,
+      language,
+    }),
+    enabled: !!userJid,
+  });
+
+  const regradeSubmissionsMutation = useMutation(regradeProblemSetItemSubmissionsMutationOptions(problemSet.jid));
+
+  const problemSummaries = !userJid
+    ? []
+    : response
+      ? response.config.problemJids.map(problemJid => ({
+          name: response.problemNamesMap[problemJid] || '-',
+          itemJids: response.itemJidsByProblemJid[problemJid],
+          submissionsByItemJid: response.submissionsByItemJid,
+          canViewGrading: true,
+          canManage: response.config.canManage,
+          itemTypesMap: response.itemTypesMap,
+          onRegrade: () => regrade(problemJid),
+        }))
+      : undefined;
+
+  const regrade = problemJid => {
+    const { userJids } = response.config;
+    const userJid = userJids[0];
+
+    regradeSubmissionsMutation.mutate(
+      { userJid, problemJid },
+      {
+        onSuccess: () => {
+          toastActions.showSuccessToast('Regrade in progress.');
+        },
+      }
+    );
+  };
+
+  const renderUserFilter = () => {
+    if (location.pathname.includes('/users/')) {
+      return null;
+    }
+    return <ItemSubmissionUserFilter />;
+  };
+
+  const renderResults = () => {
+    if (!problemSummaries) {
+      return <LoadingState />;
+    }
+    if (problemSummaries.length === 0) {
+      return <small>No results.</small>;
+    }
+    return (
+      <>
+        <ContentCard>
+          Summary for <UserRef profile={response.profile} />
+        </ContentCard>
+        {problemSummaries.map(props => (
+          <SubmissionDetails key={props.alias} {...props} />
+        ))}
+      </>
+    );
+  };
+
+  return (
+    <ContentCard title="Results">
+      {renderUserFilter()}
+      {renderResults()}
+    </ContentCard>
+  );
+}

@@ -1,0 +1,104 @@
+@use '../../styles/base' as *;
+
+.sidebar {
+  font-family: $accent-font;
+}
+
+a.sidebar__item {
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 3px;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: inherit;
+    background-color: $tertiary-background-color;
+
+    .bp6-dark & {
+      background-color: $dark-tertiary-background-color;
+    }
+
+    .bp6-dark &.sidebar__item--active {
+      background-color: $dark-secondary-background-color;
+    }
+  }
+
+  &--muted {
+    color: #bcc0c2;
+
+    .bp6-dark & {
+      color: #5d6c79;
+    }
+
+    .bp6-tag {
+      background-color: #ced4d8;
+
+      .bp6-dark & {
+        background-color: #5f6d79;
+      }
+    }
+  }
+
+  // After --muted, because the current item keeps its full contrast.
+  &--active {
+    color: inherit;
+    background-color: $tertiary-background-color;
+
+    .bp6-dark & {
+      color: inherit;
+      background-color: $dark-secondary-background-color;
+    }
+  }
+}
+
+.sidebar__item-title {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.sidebar__group {
+  padding: 0 8px;
+  line-height: 30px;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-small;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+
+  &:not(:first-child) {
+    margin-top: 16px;
+  }
+
+  .bp6-light & {
+    color: $secondary-text-color;
+  }
+
+  .bp6-dark & {
+    color: $dark-secondary-text-color;
+  }
+}
+
+.sidebar .content-card.bp6-card {
+  padding: 0 8px;
+  background: none;
+  box-shadow: none;
+}
+
+.sidebar__responsive {
+  display: none;
+}
+
+.sidebar__responsive-items {
+  width: $sidebar-width-narrow;
+  padding: 4px;
+}
+
+@media only screen and (max-width: $breakpoint-mobile) {
+  .sidebar__full {
+    display: none;
+  }
+
+  .sidebar__responsive {
+    display: block;
+  }
+}

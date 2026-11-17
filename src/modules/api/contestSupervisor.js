@@ -1,0 +1,43 @@
+import { stringify } from 'query-string';
+
+import { baseContestURL } from './contest';
+import { get, post } from './http';
+
+export const SupervisorManagementPermission = {
+  All: 'ALL',
+  Announcements: 'ANNOUNCEMENT',
+  Problems: 'PROBLEM',
+  Submissions: 'SUBMISSION',
+  Clarifications: 'CLARIFICATION',
+  Scoreboard: 'SCOREBOARD',
+  Files: 'FILE',
+};
+
+export const supervisorManagementPermissionShortNamesMap = {
+  [SupervisorManagementPermission.All]: 'ALL',
+  [SupervisorManagementPermission.Announcements]: 'ANNC',
+  [SupervisorManagementPermission.Problems]: 'PROB',
+  [SupervisorManagementPermission.Submissions]: 'SUBM',
+  [SupervisorManagementPermission.Clarifications]: 'CLAR',
+  [SupervisorManagementPermission.Scoreboard]: 'SCOR',
+  [SupervisorManagementPermission.Files]: 'FILE',
+};
+
+export const supervisorManagementPermissions = Object.keys(SupervisorManagementPermission);
+
+const baseURL = contestJid => `${baseContestURL(contestJid)}/supervisors`;
+
+export const contestSupervisorAPI = {
+  getSupervisors: (token, contestJid, page) => {
+    const params = stringify({ page });
+    return get(`${baseURL(contestJid)}?${params}`, token);
+  },
+
+  addSupervisors: (token, contestJid, data) => {
+    return post(`${baseURL(contestJid)}/add`, token, data);
+  },
+
+  removeSupervisors: (token, contestJid, usernames) => {
+    return post(`${baseURL(contestJid)}/remove`, token, usernames);
+  },
+};

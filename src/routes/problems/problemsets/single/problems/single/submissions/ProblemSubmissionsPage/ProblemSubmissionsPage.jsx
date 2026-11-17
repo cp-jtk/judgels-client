@@ -1,0 +1,117 @@
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useLocation, useParams } from '@tanstack/react-router';
+
+import { ContentCard } from '../../../../../../../../components/ContentCard/ContentCard';
+import CursorPagination from '../../../../../../../../components/CursorPagination/CursorPagination';
+import { LoadingState } from '../../../../../../../../components/LoadingState/LoadingState';
+import { RegradeAllButton } from '../../../../../../../../components/RegradeAllButton/RegradeAllButton';
+import SubmissionUserFilter from '../../../../../../../../components/SubmissionUserFilter/SubmissionUserFilter';
+import { problemSetBySlugQueryOptions } from '../../../../../../../../modules/queries/problemSet';
+import { problemSetProblemQueryOptions } from '../../../../../../../../modules/queries/problemSetProblem';
+import {
+  problemSetSubmissionsQueryOptions,
+  regradeProblemSetSubmissionsMutationOptions,
+  regradeTrainingSubmissionMutationOptions,
+} from '../../../../../../../../modules/queries/trainingSubmission';
+import { useSession } from '../../../../../../../../modules/session';
+import { reallyConfirm } from '../../../../../../../../utils/confirmation';
+import { ProblemSubmissionsTable } from '../ProblemSubmissionsTable/ProblemSubmissionsTable';
+
+import * as toastActions from '../../../../../../../../modules/toast/toastActions';
+
+export default function ProblemSubmissionsPage() {
+  const { problemSetSlug, problemAlias } = useParams({ strict: false });
+  const location = useLocation();
+  const { user } = useSession();
+  const userJid = user?.jid;
+  const username = user?.username;
+  const { data: problemSet } = useSuspenseQuery(problemSetBySlugQueryOptions(problemSetSlug));
+  const { data: problem } = useSuspenseQuery(problemSetProblemQueryOptions(problemSet.jid, problemAlias));
+
+  const beforeId = location.search.before;
+  const afterId = location.search.after;
+  const isUserFilterMine = (location.pathname + '/').includes('/mine/');
+  const usernameFilter = isUserFilterMine ? username : undefined;
+
+  const { data: response } = useQuery(
+    problemSetSubmissionsQueryOptions(problem.problemJid, { username: usernameFilter, beforeId, afterId })
+  );
+
+  const regradeSubmissionMutation = useMutation(regradeTrainingSubmissionMutationOptions());
+  const regradeSubmissionsMutation = useMutation(regradeProblemSetSubmissionsMutationOptions(problem.problemJid));
+
+  const onRegrade = submissionJid => {
+    regradeSubmissionMutation.mutate(submissionJid, {
+      onSuccess: () => {
+        toastActions.showSuccessToast('Regrade in progress.');
+      },
+    });
+  };
+
+  const onRegradeAll = () => {
+    if (reallyConfirm('Regrade all submissions in all pages?')) {
+      regradeSubmissionsMutation.mutate(undefined, {
+        onSuccess: () => {
+          toastActions.showSuccessToast('Regrade in progress.');
+        },
+      });
+    }
+  };
+
+  const renderUserFilter = () => {
+    return userJid && <SubmissionUserFilter />;
+  };
+
+  const renderHeader = () => {
+    return <div>{renderRegradeAllButton()}</div>;
+  };
+
+  const renderRegradeAllButton = () => {
+    if (!response || !response.config.canManage) {
+      return null;
+    }
+    return <RegradeAllButton onRegradeAll={onRegradeAll} />;
+  };
+
+  const renderSubmissions = () => {
+    if (!response) {
+      return <LoadingState />;
+    }
+
+    const { data: submissions, config, profilesMap, problemAliasesMap } = response;
+    if (submissions.page.length === 0) {
+      return (
+        <p>
+          <small>No submissions.</small>
+        </p>
+      );
+    }
+
+    return (
+      <ProblemSubmissionsTable
+        problemSet={problemSet}
+        problem={problem}
+        submissions={submissions.page}
+        canManage={config.canManage}
+        profilesMap={profilesMap}
+        problemAliasesMap={problemAliasesMap}
+        onRegrade={onRegrade}
+      />
+    );
+  };
+
+  return (
+    <ContentCard title="Submissions">
+      {renderUserFilter()}
+      {renderHeader()}
+      {renderSubmissions()}
+      {response && (
+        <CursorPagination
+          data={response.data.page}
+          hasPreviousPage={response.data.hasPreviousPage}
+          hasNextPage={response.data.hasNextPage}
+        />
+      )}
+    </ContentCard>
+  );
+}

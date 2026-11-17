@@ -1,0 +1,39 @@
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { RouterProvider } from '@tanstack/react-router';
+import { createRoot } from 'react-dom/client';
+import 'typeface-open-sans';
+import 'typeface-roboto';
+
+import { queryClient } from './modules/queryClient';
+import { getUser } from './modules/session';
+import { WebPrefsProvider } from './modules/webPrefs';
+import { router } from './routes/router';
+
+import './styles/index.scss';
+
+const persister = createAsyncStoragePersister({
+  storage: window.localStorage,
+});
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(
+  <PersistQueryClientProvider
+    client={queryClient}
+    persistOptions={{
+      persister,
+      buster: `28:${getUser()?.jid || ''}`,
+      dehydrateOptions: {
+        shouldDehydrateQuery: query => {
+          if (query.state.status !== 'success') return false;
+          return query.meta?.persist !== false;
+        },
+      },
+    }}
+  >
+    <WebPrefsProvider>
+      <RouterProvider router={router} />
+    </WebPrefsProvider>
+  </PersistQueryClientProvider>
+);

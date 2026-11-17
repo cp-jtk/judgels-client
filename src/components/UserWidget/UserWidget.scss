@@ -1,0 +1,76 @@
+@use '../../styles/base' as *;
+
+.user-widget__profile {
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 30px;
+  line-height: 30px;
+  vertical-align: middle !important;
+
+  .bp6-light & {
+    background-color: #f4f5f6;
+  }
+
+  .bp6-dark & {
+    background-color: $dark-background-color;
+  }
+
+  svg {
+    vertical-align: middle !important;
+  }
+}
+
+.bp6-menu li,
+.bp6-menu li a {
+  color: inherit;
+}
+
+.user-widget__avatar-wrapper {
+  height: 60px;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.user-widget__avatar {
+  height: 40px;
+  width: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.user-widget__link {
+  font-size: $font-size-small;
+}
+
+.user-widget__burger,
+.user-widget__menu-helper {
+  display: none !important;
+}
+
+.user-widget__menu a {
+  color: inherit !important;
+}
+
+.user-widget__username {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: $breakpoint-phone) {
+  .user-widget__avatar-wrapper {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: $breakpoint-menubar) {
+  .user-widget__avatar-menu {
+    margin-right: 10px;
+  }
+
+  .user-widget__burger,
+  .user-widget__menu-helper {
+    display: flex !important;
+    align-items: center;
+    cursor: pointer;
+  }
+}

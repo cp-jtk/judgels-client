@@ -1,0 +1,29 @@
+@use '../../styles/variables/colors' as *;
+
+.breadcrumb-title.bp6-breadcrumbs {
+  flex-wrap: wrap;
+  height: auto;
+
+  // As tall as the text, so that the separator does not make the heading taller.
+  > li::after {
+    margin-block: -4px;
+  }
+}
+
+.breadcrumb-title.bp6-breadcrumbs .bp6-breadcrumb {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+
+  .bp6-icon {
+    margin-right: 0;
+  }
+
+  &:not(.bp6-breadcrumb-current):hover {
+    color: $primary-color;
+
+    .bp6-dark & {
+      color: $dark-link-color;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+@use '../../../../../../styles/base' as *;
+
+.item-essay-form {
+  .text-area {
+    width: 80%;
+    min-height: 100px;
+
+    &.live {
+      resize: vertical;
+    }
+
+    &.readonly {
+      resize: none;
+      background-color: $readonly-background-color;
+    }
+  }
+
+  .essay-button {
+    height: $control-height;
+    flex-shrink: 0 !important;
+  }
+
+  .essay-callout {
+    height: $control-height;
+    line-height: 14px;
+
+    .bp6-icon {
+      top: 10px !important;
+    }
+  }
+
+  .essay-callout-edit {
+    height: $control-height;
+    background-color: white;
+    color: white;
+  }
+}

@@ -1,0 +1,70 @@
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useLocation, useParams } from '@tanstack/react-router';
+
+import { ContentCard } from '../../../../../../../../../components/ContentCard/ContentCard';
+import StatementLanguageWidget from '../../../../../../../../../components/LanguageWidget/StatementLanguageWidget';
+import { LoadingState } from '../../../../../../../../../components/LoadingState/LoadingState';
+import { ProblemWorksheetCard } from '../../../../../../../../../components/ProblemWorksheetCard/Bundle/ProblemWorksheetCard';
+import { problemSetBySlugQueryOptions } from '../../../../../../../../../modules/queries/problemSet';
+import {
+  createProblemSetItemSubmissionMutationOptions,
+  problemSetLatestItemSubmissionsQueryOptions,
+} from '../../../../../../../../../modules/queries/trainingItemSubmission';
+
+export default function ProblemStatementPage(props) {
+  const { problemSetSlug } = useParams({ strict: false });
+  const location = useLocation();
+  const { data: problemSet } = useSuspenseQuery(problemSetBySlugQueryOptions(problemSetSlug));
+
+  const { data: latestSubmissions } = useQuery(
+    problemSetLatestItemSubmissionsQueryOptions(problemSet.jid, props.worksheet.problem.alias)
+  );
+
+  const createItemSubmissionMutation = useMutation(
+    createProblemSetItemSubmissionMutationOptions(problemSet.jid, props.worksheet.problem.alias)
+  );
+
+  const createSubmission = (itemJid, answer) => {
+    const { problem } = props.worksheet;
+    createItemSubmissionMutation.mutate({ problemJid: problem.problemJid, itemJid, answer });
+  };
+
+  const renderStatementLanguageWidget = () => {
+    const { defaultLanguage, languages } = props.worksheet;
+    if (!defaultLanguage || !languages) {
+      return null;
+    }
+    const widgetProps = {
+      defaultLanguage: defaultLanguage,
+      statementLanguages: languages,
+    };
+    return <StatementLanguageWidget {...widgetProps} />;
+  };
+
+  const renderStatement = () => {
+    const { problem, worksheet } = props.worksheet;
+    if (!problem || !worksheet) {
+      return <LoadingState />;
+    }
+
+    if (!latestSubmissions) {
+      return <LoadingState />;
+    }
+    const resultsUrl = (location.pathname + '/results').replace('//', '/');
+
+    return (
+      <ProblemWorksheetCard
+        latestSubmissions={latestSubmissions}
+        onAnswerItem={createSubmission}
+        worksheet={worksheet}
+        resultsUrl={resultsUrl}
+      />
+    );
+  };
+
+  return (
+    <ContentCard title="Statement" action={renderStatementLanguageWidget()}>
+      {renderStatement()}
+    </ContentCard>
+  );
+}

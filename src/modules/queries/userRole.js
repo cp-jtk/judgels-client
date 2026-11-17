@@ -1,0 +1,25 @@
+import { queryOptions } from '@tanstack/react-query';
+
+import { userRoleAPI } from '../api/userRole';
+import { queryClient } from '../queryClient';
+import { getToken } from '../session';
+
+export const userRolesQueryOptions = () =>
+  queryOptions({
+    queryKey: ['user-roles'],
+    queryFn: () => userRoleAPI.getRoles(getToken()),
+  });
+
+export const addUserRolesMutationOptions = () => ({
+  mutationFn: ({ usernames, roles }) => userRoleAPI.addRoles(getToken(), usernames, roles),
+  onSuccess: () => {
+    queryClient.invalidateQueries(userRolesQueryOptions());
+  },
+});
+
+export const setUserRolesMutationOptions = userJid => ({
+  mutationFn: roles => userRoleAPI.setRoles(getToken(), userJid, roles),
+  onSuccess: () => {
+    queryClient.invalidateQueries(userRolesQueryOptions());
+  },
+});

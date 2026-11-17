@@ -1,0 +1,69 @@
+@use '../../../styles/base' as *;
+
+.home-banner {
+  margin: calc(-1 * var(--app-content-padding-top)) -10px 20px -10px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+
+  .bp6-light & {
+    background-color: $primary-color;
+  }
+
+  .bp6-dark & {
+    background-color: $dark-blue-secondary-background-color;
+  }
+}
+
+.home-banner__contents {
+  width: 100%;
+  text-align: center;
+}
+
+.home-banner__text {
+  color: white !important;
+
+  .bp6-dark & {
+    color: $dark-text-color !important;
+  }
+}
+
+.home-banner__text h1 {
+  font-size: $font-size-page-title;
+  line-height: 32px;
+}
+
+.home-banner__text h2 {
+  margin-top: 40px;
+  font-family: $accent-font;
+  font-size: $font-size-title !important;
+  font-weight: normal !important;
+  line-height: 24px !important;
+  margin-bottom: 5px !important;
+}
+
+.home-widget-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.home-widget-row__two-thirds {
+  flex: 2 1 0;
+}
+
+.home-widget-row__one-third {
+  flex: 1 1 0;
+}
+
+@media only screen and (max-width: $breakpoint-phone) {
+  .home-banner__contents {
+    max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .home-widget-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

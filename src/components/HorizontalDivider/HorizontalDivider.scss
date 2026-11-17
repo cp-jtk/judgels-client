@@ -1,0 +1,11 @@
+@use '../../styles/base' as *;
+
+.horizontal-divider {
+  margin-left: -$card-padding;
+  margin-right: -$card-padding;
+}
+
+.horizontal-divider--inner {
+  margin-left: -10px;
+  margin-right: -10px;
+}

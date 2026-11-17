@@ -1,0 +1,44 @@
+@use '../../../styles/base' as *;
+
+.form-table-input td {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.form-table-input td:last-child {
+  padding-right: 0 !important;
+}
+
+.form-table-input td:not(:has(textarea)) {
+  line-height: 40px !important;
+}
+
+.form-table-input__key {
+  padding: 15px 0 11px;
+  line-height: 18px;
+}
+
+.form-table-input__label {
+  font-weight: $font-weight-bold;
+}
+
+.form-table-input__label-helper {
+  font-size: $font-size-small;
+}
+
+.form-table-input__group {
+  margin-bottom: 5px;
+  margin-top: 3px;
+}
+
+.form-table-input .bp6-form-group .bp6-control {
+  margin: 0;
+}
+
+.form-table-input .bp6-form-helper-text {
+  line-height: 20px;
+}
+
+table.bp6-html-table .form-table-input td {
+  vertical-align: top;
+}

@@ -1,0 +1,51 @@
+@use '../../../../styles/base' as *;
+
+.problem-submission-editor {
+  flex-grow: 1;
+  margin-bottom: 0;
+
+  @media only screen and (max-width: $breakpoint-tablet) {
+    margin-bottom: 1px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+
+    @media only screen and (max-width: $breakpoint-tablet) {
+      display: none;
+
+      &.show {
+        display: flex;
+      }
+    }
+
+    > .bp6-form-group {
+      margin-bottom: 10px;
+    }
+
+    > .problem-submission-summary {
+      margin-bottom: 8px;
+    }
+
+    .editor-header {
+      .bp6-form-group {
+        margin: 0;
+      }
+
+      .bp6-tag {
+        padding-top: 1px;
+      }
+    }
+  }
+
+  .responsive-button {
+    display: none;
+
+    @media only screen and (max-width: $breakpoint-tablet) {
+      display: block;
+    }
+  }
+}

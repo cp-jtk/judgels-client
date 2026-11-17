@@ -1,0 +1,18 @@
+import { Suspense, lazy } from 'react';
+
+import { lazyRetry } from '../../../lazy';
+import { FormTableInput } from '../FormTableInput/FormTableInput';
+
+export function FormTableRichTextArea(props) {
+  const { input, rows } = props;
+  const LazyTinyMCETextArea = lazy(() => lazyRetry(() => import('../FormRichTextArea/TinyMCETextArea')));
+
+  return (
+    <FormTableInput {...props}>
+      <Suspense fallback={null}>
+        <LazyTinyMCETextArea onChange={input.onChange} id={input.name} />
+      </Suspense>
+      <textarea id={input.name} rows={rows} {...input} className="tinymce" />
+    </FormTableInput>
+  );
+}

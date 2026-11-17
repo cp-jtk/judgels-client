@@ -1,0 +1,21 @@
+.problem-submission-summary {
+  width: 100%;
+  padding: 8px;
+
+  &__close-button {
+    position: absolute;
+    right: 0;
+  }
+
+  &__title {
+    margin: 0;
+  }
+
+  &__details-button {
+    margin-left: auto;
+  }
+
+  .verdict-tag {
+    width: 100%;
+  }
+}

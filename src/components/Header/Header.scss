@@ -1,0 +1,121 @@
+@use '../../styles/base' as *;
+
+.bp6-navbar.header {
+  height: $header-height;
+  color: white;
+
+  .bp6-light & {
+    background-color: $primary-color !important;
+  }
+
+  .bp6-dark & {
+    color: $dark-text-color !important;
+    background-color: $dark-blue-main-background-color !important;
+    box-shadow:
+      0 0 0 1px rgba(17, 20, 24, 0.1),
+      0 1px 1px rgba(17, 20, 24, 0.2);
+  }
+
+  a {
+    color: white;
+
+    .bp6-dark & {
+      color: $dark-text-color !important;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.header__center-wrapper {
+  position: relative;
+  min-width: 0;
+}
+
+.header__center {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.header__chevron {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0 4px;
+  border: none;
+  font: inherit;
+
+  &--left {
+    left: 0;
+    padding-right: 12px;
+    background: linear-gradient(to right, $primary-color 50%, transparent);
+  }
+
+  &--right {
+    right: 0;
+    padding-left: 12px;
+    background: linear-gradient(to left, $primary-color 50%, transparent);
+  }
+}
+
+.bp6-dark .header__chevron {
+  color: $dark-text-color;
+
+  &--left {
+    background: linear-gradient(to right, $dark-blue-main-background-color 50%, transparent);
+  }
+
+  &--right {
+    background: linear-gradient(to left, $dark-blue-main-background-color 50%, transparent);
+  }
+}
+
+.header__left,
+.header__name {
+  min-width: 0;
+}
+
+.header__logo {
+  margin-top: 3px;
+  height: 40px;
+}
+
+.header__title {
+  font-size: $font-size-page-title-compact;
+  font-weight: $font-weight-strong;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header__subtitle {
+  font-size: $font-size-small;
+}
+
+@media only screen and (max-width: $breakpoint-menubar) {
+  .header__subtitle {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: $breakpoint-menubar + 1) {
+  .header__left {
+    width: 275px;
+  }
+}
+
+@media only screen and (min-width: $breakpoint-wide + 1) {
+  .header__left {
+    width: 325px;
+  }
+}

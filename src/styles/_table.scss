@@ -1,0 +1,32 @@
+.table-list {
+  td {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+}
+
+.table-list-condensed {
+  td {
+    padding-top: 6px !important;
+    padding-bottom: 4px !important;
+  }
+}
+
+.item-submissions-table {
+  .col-prob {
+    width: 80px;
+  }
+
+  .col-item-num {
+    width: 50px;
+  }
+
+  .col-verdict {
+    width: 70px;
+    text-align: center;
+  }
+
+  .col-action {
+    width: 50px;
+  }
+}

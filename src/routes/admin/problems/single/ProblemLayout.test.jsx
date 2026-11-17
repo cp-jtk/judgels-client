@@ -1,0 +1,80 @@
+import { act, render, screen } from '@testing-library/react';
+
+import { setSession } from '../../../../modules/session';
+import { QueryClientProviderWrapper } from '../../../../test/QueryClientProviderWrapper';
+import { TestRouter } from '../../../../test/RouterWrapper';
+import { nockApi } from '../../../../utils/nock';
+import ProblemLayout from './ProblemLayout';
+
+describe('ProblemLayout', () => {
+  beforeEach(() => {
+    setSession('token', { jid: 'userJid' });
+  });
+
+  const renderComponent = async ({ hasLocalChanges, type = 'PROGRAMMING', canManage = true }) => {
+    nockApi().get('/v4/problems/slug/problem-1').reply(200, { jid: 'JIDPROG1', slug: 'problem-1' });
+    nockApi()
+      .get('/v4/problems/JIDPROG1')
+      .reply(200, { id: 1, jid: 'JIDPROG1', slug: 'problem-1', type, authorJid: 'JIDUSER1' });
+    nockApi().get('/v4/problems/JIDPROG1/permissions').reply(200, { canManage });
+    nockApi().get('/v4/problems/JIDPROG1/versions/local/exists').reply(200, hasLocalChanges);
+
+    await act(async () =>
+      render(
+        <QueryClientProviderWrapper>
+          <TestRouter
+            initialEntries={['/admin/problems/problem-1/general']}
+            path="/admin/problems/$problemSlug/general"
+          >
+            <ProblemLayout />
+          </TestRouter>
+        </QueryClientProviderWrapper>
+      )
+    );
+
+    await screen.findByText(/problem-1/);
+  };
+
+  test('renders the tabs', async () => {
+    await renderComponent({ hasLocalChanges: false });
+
+    expect(
+      screen
+        .getAllByRole('link')
+        .map(link => link.getAttribute('href'))
+        .filter(href => href.startsWith('/admin/problems/problem-1/'))
+    ).toEqual([
+      '/admin/problems/problem-1/general',
+      '/admin/problems/problem-1/statements',
+      '/admin/problems/problem-1/languages',
+      '/admin/problems/problem-1/media',
+      '/admin/problems/problem-1/grading',
+      '/admin/problems/problem-1/submissions',
+      '/admin/problems/problem-1/partners',
+      '/admin/problems/problem-1/editorial',
+      '/admin/problems/problem-1/versions',
+    ]);
+    expect(screen.queryByRole('link', { name: 'Items' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/uncommitted changes/i)).not.toBeInTheDocument();
+  });
+
+  test('shows the items tab of a bundle problem instead of the grading tab', async () => {
+    await renderComponent({ hasLocalChanges: false, type: 'BUNDLE' });
+
+    expect(screen.getByRole('link', { name: 'Items' })).toHaveAttribute('href', '/admin/problems/problem-1/items');
+    expect(screen.queryByRole('link', { name: 'Grading' })).not.toBeInTheDocument();
+  });
+
+  test('hides the partners tab when the problem cannot be managed', async () => {
+    await renderComponent({ hasLocalChanges: false, canManage: false });
+    expect(screen.queryByRole('link', { name: 'Partners' })).not.toBeInTheDocument();
+  });
+
+  test('warns about uncommitted changes', async () => {
+    await renderComponent({ hasLocalChanges: true });
+    expect(screen.getByRole('link', { name: 'uncommitted changes' })).toHaveAttribute(
+      'href',
+      '/admin/problems/problem-1/versions'
+    );
+  });
+});

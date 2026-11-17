@@ -1,0 +1,20 @@
+@use '../../../../../../../styles/base' as *;
+
+.problem-editorial-dialog {
+  width: $dialog-width-large;
+}
+
+.problem-editorial-dialog-button {
+  margin-top: 4px;
+}
+
+.problem-editorial-card {
+  max-height: 650px;
+  overflow: auto;
+}
+
+@media only screen and (max-width: $dialog-width-large) {
+  .problem-editorial-dialog {
+    width: inherit;
+  }
+}

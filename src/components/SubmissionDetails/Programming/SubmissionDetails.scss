@@ -1,0 +1,88 @@
+.programming-submission-details {
+  pre {
+    line-height: 18px;
+  }
+
+  tr {
+    height: 30px;
+  }
+
+  th {
+    padding-top: 0;
+  }
+
+  td {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .col-id {
+    width: 50px;
+  }
+
+  .col-verdict {
+    width: 135px;
+  }
+
+  .col-tc-info {
+    width: 110px;
+  }
+
+  .general-info__time {
+    white-space: nowrap;
+    line-height: 24px;
+  }
+
+  .pending-loader {
+    margin-bottom: 15px;
+  }
+
+  details summary > * {
+    display: inline-block;
+    margin-left: 5px;
+    margin-bottom: 0;
+  }
+
+  .details-card {
+    padding: 10px;
+    margin-bottom: 0;
+  }
+
+  .details-content {
+    margin-left: 15px;
+  }
+
+  .test-data-heading {
+    display: inline-block;
+    width: 220px;
+  }
+
+  .test-data-verdicts {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .subtask-name {
+    display: inline-block;
+    width: 80px;
+  }
+
+  .subtask-verdict {
+    display: inline-block;
+    width: 130px;
+    font-weight: normal;
+  }
+
+  .subtask-score {
+    display: inline-block;
+    width: 30px;
+    font-weight: normal;
+    text-align: right;
+  }
+
+  .subtask-score-decimal {
+    display: inline-block;
+    font-weight: normal;
+    text-align: left;
+  }
+}

@@ -1,0 +1,60 @@
+import { Button, Intent, Switch } from '@blueprintjs/core';
+import { Flex } from '@blueprintjs/labs';
+import { useState } from 'react';
+import { Field, Form } from 'react-final-form';
+
+import { ActionButtons } from '../../../../components/ActionButtons/ActionButtons';
+import FormAceEditor from '../../../../components/forms/FormAceEditor/FormAceEditor';
+import { FormRichTextArea } from '../../../../components/forms/FormRichTextArea/FormRichTextArea';
+import { FormTextInput } from '../../../../components/forms/FormTextInput/FormTextInput';
+import { FormUnsavedChangesAlert } from '../../../../components/forms/UnsavedChangesAlert/UnsavedChangesAlert';
+import { Required } from '../../../../components/forms/validations';
+import { StatementManual } from '../StatementManual/StatementManual';
+
+const titleField = {
+  name: 'title',
+  label: 'Title',
+  validate: Required,
+};
+
+const textField = {
+  name: 'text',
+  label: 'Text',
+  rows: 25,
+  permissive: true,
+};
+
+export default function StatementEditForm({ onSubmit, initialValues, onCancel, baseMediaURL }) {
+  const [isSourceMode, setIsSourceMode] = useState(false);
+
+  return (
+    <Form onSubmit={onSubmit} initialValues={initialValues}>
+      {({ handleSubmit, submitting }) => (
+        <Flex asChild flexDirection="column" gap={2}>
+          <form onSubmit={handleSubmit}>
+            <FormUnsavedChangesAlert />
+            <Field component={FormTextInput} {...titleField} />
+            <Flex justifyContent="space-between" alignItems="center">
+              <Switch
+                style={{ marginBottom: 0 }}
+                label="Source mode"
+                checked={isSourceMode}
+                onChange={e => setIsSourceMode(e.target.checked)}
+              />
+              <StatementManual />
+            </Flex>
+            {isSourceMode ? (
+              <Field component={FormAceEditor} name={textField.name} mode="html" tall />
+            ) : (
+              <Field component={FormRichTextArea} {...textField} tall baseMediaURL={baseMediaURL} />
+            )}
+            <ActionButtons justifyContent="end">
+              <Button text="Cancel" disabled={submitting} onClick={onCancel} />
+              <Button type="submit" text="Save" intent={Intent.PRIMARY} loading={submitting} />
+            </ActionButtons>
+          </form>
+        </Flex>
+      )}
+    </Form>
+  );
+}

@@ -1,0 +1,376 @@
+import { Outlet, createRoute, lazyRouteComponent, redirect } from '@tanstack/react-router';
+
+import { retryImport } from '../../lazy';
+import { ContestStyle } from '../../modules/api/contest';
+import { ContestRole } from '../../modules/api/contestWeb';
+import {
+  contestBySlugQueryOptions,
+  contestDescriptionQueryOptions,
+  contestsQueryOptions,
+} from '../../modules/queries/contest';
+import { contestAnnouncementsQueryOptions } from '../../modules/queries/contestAnnouncement';
+import { contestClarificationsQueryOptions } from '../../modules/queries/contestClarification';
+import { contestContestantsQueryOptions } from '../../modules/queries/contestContestant';
+import { contestEditorialQueryOptions } from '../../modules/queries/contestEditorial';
+import { contestFilesQueryOptions } from '../../modules/queries/contestFile';
+import {
+  contestItemSubmissionSummaryQueryOptions,
+  contestItemSubmissionsQueryOptions,
+  contestLatestItemSubmissionsQueryOptions,
+} from '../../modules/queries/contestItemSubmission';
+import { contestLogsQueryOptions } from '../../modules/queries/contestLog';
+import { contestManagersQueryOptions } from '../../modules/queries/contestManager';
+import { contestModulesConfigQueryOptions, contestModulesQueryOptions } from '../../modules/queries/contestModule';
+import {
+  contestBundleProblemWorksheetQueryOptions,
+  contestProblemsQueryOptions,
+  contestProgrammingProblemWorksheetQueryOptions,
+} from '../../modules/queries/contestProblem';
+import { contestScoreboardQueryOptions } from '../../modules/queries/contestScoreboard';
+import {
+  contestSubmissionWithSourceByIdQueryOptions,
+  contestSubmissionsQueryOptions,
+} from '../../modules/queries/contestSubmission';
+import { contestSupervisorsQueryOptions } from '../../modules/queries/contestSupervisor';
+import { contestWebConfigQueryOptions } from '../../modules/queries/contestWeb';
+import { queryClient } from '../../modules/queryClient';
+import { getWebPrefs } from '../../modules/webPrefs';
+import { createDocumentTitle } from '../../utils/title';
+
+export const createContestsRoutes = appRoute => {
+  const contestsRoute = createRoute({
+    getParentRoute: () => appRoute,
+    path: 'contests',
+    component: Outlet,
+    head: () => ({ meta: [{ title: createDocumentTitle('Contests') }] }),
+  });
+
+  const contestsIndexRoute = createRoute({
+    getParentRoute: () => contestsRoute,
+    path: '/',
+    component: lazyRouteComponent(retryImport(() => import('./ContestsIndexPage'))),
+    loader: ({ search = {} }) => {
+      queryClient.prefetchQuery(contestsQueryOptions({ name: search.name, page: search.page }));
+    },
+  });
+
+  const contestRoute = createRoute({
+    getParentRoute: () => contestsRoute,
+    path: '$contestSlug',
+    component: lazyRouteComponent(retryImport(() => import('./single/SingleContestLayout'))),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      await queryClient.ensureQueryData(contestWebConfigQueryOptions(contest.jid));
+    },
+  });
+
+  const contestSettingsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'settings',
+    component: lazyRouteComponent(retryImport(() => import('./single/settings/ContestSettingsLayout'))),
+    head: () => ({ meta: [{ title: createDocumentTitle('Settings') }] }),
+  });
+
+  const contestSettingsIndexRoute = createRoute({
+    getParentRoute: () => contestSettingsRoute,
+    path: '/',
+    beforeLoad: ({ params }) => {
+      throw redirect({ to: '/contests/$contestSlug/settings/general', params, replace: true });
+    },
+  });
+
+  const contestSettingsGeneralRoute = createRoute({
+    getParentRoute: () => contestSettingsRoute,
+    path: 'general',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/settings/general/ContestSettingsGeneralPage/ContestSettingsGeneralPage'))
+    ),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestDescriptionQueryOptions(contest.jid));
+    },
+  });
+
+  const contestSettingsModulesRoute = createRoute({
+    getParentRoute: () => contestSettingsRoute,
+    path: 'modules',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/settings/modules/ContestSettingsModulesPage/ContestSettingsModulesPage'))
+    ),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestModulesQueryOptions(contest.jid));
+      queryClient.prefetchQuery(contestModulesConfigQueryOptions(contest.jid));
+    },
+  });
+
+  const contestOverviewRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: '/',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/overview/ContestOverviewPage/ContestOverviewPage'))
+    ),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestDescriptionQueryOptions(contest.jid));
+    },
+  });
+
+  const contestAnnouncementsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'announcements',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/announcements/ContestAnnouncementsPage/ContestAnnouncementsPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Announcements') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestAnnouncementsQueryOptions(contest.jid, { page: search.page }));
+    },
+  });
+
+  const contestProblemsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'problems',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/problems/ContestProblemsPage/ContestProblemsPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Problems') }] }),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestProblemsQueryOptions(contest.jid));
+    },
+  });
+
+  const contestProblemRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'problems/$problemAlias',
+    component: lazyRouteComponent(retryImport(() => import('./single/problems/single/ContestProblemPage'))),
+    loader: async ({ params: { contestSlug, problemAlias } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      const language = getWebPrefs().statementLanguage;
+      if (contest.style === ContestStyle.Bundle) {
+        queryClient
+          .fetchQuery(contestBundleProblemWorksheetQueryOptions(contest.jid, problemAlias, { language }))
+          .then(worksheet => {
+            if (worksheet?.problem?.alias) {
+              queryClient.prefetchQuery(contestLatestItemSubmissionsQueryOptions(contest.jid, worksheet.problem.alias));
+            }
+          });
+      } else {
+        queryClient.prefetchQuery(
+          contestProgrammingProblemWorksheetQueryOptions(contest.jid, problemAlias, { language })
+        );
+      }
+    },
+  });
+
+  const contestEditorialRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'editorial',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/editorial/ContestEditorialPage/ContestEditorialPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Editorial') }] }),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      const language = getWebPrefs().editorialLanguage;
+      queryClient.prefetchQuery(contestEditorialQueryOptions(contest.jid, { language }));
+    },
+  });
+
+  const contestContestantsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'contestants',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/contestants/ContestContestantsPage/ContestContestantsPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Contestants') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestContestantsQueryOptions(contest.jid, { page: search.page }));
+    },
+  });
+
+  const contestSupervisorsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'supervisors',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/supervisors/ContestSupervisorsPage/ContestSupervisorsPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Supervisors') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestSupervisorsQueryOptions(contest.jid, { page: search.page }));
+    },
+  });
+
+  const contestManagersRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'managers',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/managers/ContestManagersPage/ContestManagersPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Managers') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestManagersQueryOptions(contest.jid, { page: search.page }));
+    },
+  });
+
+  const contestSubmissionsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'submissions',
+    component: Outlet,
+    head: () => ({ meta: [{ title: createDocumentTitle('Submissions') }] }),
+  });
+
+  const contestSubmissionsIndexRoute = createRoute({
+    getParentRoute: () => contestSubmissionsRoute,
+    path: '/',
+    component: lazyRouteComponent(retryImport(() => import('./single/submissions/ContestSubmissionsPage'))),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      if (contest.style === ContestStyle.Bundle) {
+        const webConfig = await queryClient.ensureQueryData(contestWebConfigQueryOptions(contest.jid));
+        if (webConfig.role === ContestRole.Contestant) {
+          const language = getWebPrefs().statementLanguage;
+          queryClient.prefetchQuery(contestItemSubmissionSummaryQueryOptions(contest.jid, { language }));
+        } else {
+          queryClient.prefetchQuery(
+            contestItemSubmissionsQueryOptions(contest.jid, {
+              username: search.username,
+              problemAlias: search.problemAlias,
+              page: search.page,
+            })
+          );
+        }
+      } else {
+        queryClient.prefetchQuery(
+          contestSubmissionsQueryOptions(contest.jid, {
+            username: search.username,
+            problemAlias: search.problemAlias,
+            page: search.page,
+          })
+        );
+      }
+    },
+  });
+
+  const contestSubmissionRoute = createRoute({
+    getParentRoute: () => contestSubmissionsRoute,
+    path: '$submissionId',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/submissions/Programming/single/ContestSubmissionPage/ContestSubmissionPage'))
+    ),
+    loader: async ({ params: { contestSlug, submissionId } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      const language = getWebPrefs().statementLanguage;
+      queryClient.prefetchQuery(contestSubmissionWithSourceByIdQueryOptions(contest.jid, +submissionId, { language }));
+    },
+  });
+
+  const contestSubmissionUserRoute = createRoute({
+    getParentRoute: () => contestSubmissionsRoute,
+    path: 'users/$username',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/submissions/Bundle/ContestSubmissionSummaryPage/ContestSubmissionSummaryPage'))
+    ),
+    loader: async ({ params: { contestSlug, username } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      const language = getWebPrefs().statementLanguage;
+      queryClient.prefetchQuery(contestItemSubmissionSummaryQueryOptions(contest.jid, { username, language }));
+    },
+  });
+
+  const contestClarificationsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'clarifications',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/clarifications/ContestClarificationsPage/ContestClarificationsPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Clarifications') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      const language = getWebPrefs().statementLanguage;
+      queryClient.prefetchQuery(
+        contestClarificationsQueryOptions(contest.jid, { page: search.page, status: search.status, language })
+      );
+    },
+  });
+
+  const contestScoreboardRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'scoreboard',
+    component: lazyRouteComponent(
+      retryImport(() => import('./single/scoreboard/ContestScoreboardPage/ContestScoreboardPage'))
+    ),
+    head: () => ({ meta: [{ title: createDocumentTitle('Scoreboard') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(
+        contestScoreboardQueryOptions(contest.jid, {
+          frozen: !!search.frozen,
+          showClosedProblems: !!search.showClosedProblems,
+          page: search.page,
+        })
+      );
+    },
+  });
+
+  const contestFilesRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'files',
+    component: lazyRouteComponent(retryImport(() => import('./single/files/ContestFilesPage/ContestFilesPage'))),
+    head: () => ({ meta: [{ title: createDocumentTitle('Files') }] }),
+    loader: async ({ params: { contestSlug } }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(contestFilesQueryOptions(contest.jid));
+    },
+  });
+
+  const contestLogsRoute = createRoute({
+    getParentRoute: () => contestRoute,
+    path: 'logs',
+    component: lazyRouteComponent(retryImport(() => import('./single/logs/ContestLogsPage/ContestLogsPage'))),
+    head: () => ({ meta: [{ title: createDocumentTitle('Logs') }] }),
+    loader: async ({ params: { contestSlug }, search = {} }) => {
+      const contest = await queryClient.ensureQueryData(contestBySlugQueryOptions(contestSlug));
+      queryClient.prefetchQuery(
+        contestLogsQueryOptions(contest.jid, {
+          username: search.username,
+          problemAlias: search.problemAlias,
+          page: search.page,
+        })
+      );
+    },
+  });
+
+  return contestsRoute.addChildren([
+    contestsIndexRoute,
+    contestRoute.addChildren([
+      contestSettingsRoute.addChildren([
+        contestSettingsIndexRoute,
+        contestSettingsGeneralRoute,
+        contestSettingsModulesRoute,
+      ]),
+      contestOverviewRoute,
+      contestAnnouncementsRoute,
+      contestProblemsRoute,
+      contestProblemRoute,
+      contestEditorialRoute,
+      contestContestantsRoute,
+      contestSupervisorsRoute,
+      contestManagersRoute,
+      contestSubmissionsRoute.addChildren([
+        contestSubmissionsIndexRoute,
+        contestSubmissionRoute,
+        contestSubmissionUserRoute,
+      ]),
+      contestClarificationsRoute,
+      contestScoreboardRoute,
+      contestFilesRoute,
+      contestLogsRoute,
+    ]),
+  ]);
+};

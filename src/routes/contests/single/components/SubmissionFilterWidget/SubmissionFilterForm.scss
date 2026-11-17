@@ -1,0 +1,21 @@
+.submission-filter-form {
+  .form-username {
+    .form-group__select button {
+      width: 200px;
+    }
+  }
+
+  .form-problem-alias {
+    button {
+      width: 110px;
+    }
+  }
+
+  .form-username.bp6-form-group,
+  .form-problem-alias.bp6-form-group {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 5px;
+    margin-bottom: 0;
+  }
+}
