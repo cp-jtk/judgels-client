@@ -62,6 +62,16 @@ export const gradingLanguageSyntaxHighlighterValueMap = {
   OutputOnly: '',
 };
 
+export const gradingLanguageFamilyEditorModesMap = {
+  C: 'c_cpp',
+  'C++': 'c_cpp',
+  Go: 'golang',
+  Java: 'java',
+  Pascal: 'pascal',
+  Python: 'python',
+  Rust: 'rust',
+};
+
 export const gradingLanguageEditorSubmissionFilenamesMap = {
   C: 'solution.c',
   Cpp11: 'solution.cpp',
@@ -98,6 +108,10 @@ export function getGradingLanguageFilenameExtensions(code) {
 
 export function getGradingLanguageSyntaxHighlighterValue(code) {
   return gradingLanguageSyntaxHighlighterValueMap[code] || code;
+}
+
+export function getGradingLanguageEditorMode(code) {
+  return gradingLanguageFamilyEditorModesMap[getGradingLanguageFamily(code)] || 'plain_text';
 }
 
 export function getGradingLanguageEditorSubmissionFilename(code) {

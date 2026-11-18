@@ -4,12 +4,17 @@ import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/mode-c_cpp';
+import 'ace-builds/src-noconflict/mode-golang';
 import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-java';
+import 'ace-builds/src-noconflict/mode-pascal';
 import 'ace-builds/src-noconflict/mode-plain_text';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/mode-rust';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
 
-import { getGradingLanguageFamily } from '../../../modules/api/gradingLanguage';
+import { getGradingLanguageEditorMode } from '../../../modules/api/gradingLanguage';
 import { useWebPrefs } from '../../../modules/webPrefs';
 import { FormInputValidation } from '../FormInputValidation/FormInputValidation';
 import { getIntent } from '../meta';
@@ -25,7 +30,7 @@ export default function FormAceEditor({ input, meta, autoFocus, gradingLanguage,
       className={classNames('form-group-editor', { 'form-group-editor--tall': tall })}
     >
       <AceEditor
-        mode={mode || (getGradingLanguageFamily(gradingLanguage) === 'C++' ? 'c_cpp' : 'plain_text')}
+        mode={mode || getGradingLanguageEditorMode(gradingLanguage)}
         theme={isDarkMode ? 'tomorrow_night' : 'tomorrow'}
         width="100%"
         height="100%"
