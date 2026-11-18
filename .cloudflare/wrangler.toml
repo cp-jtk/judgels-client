@@ -1,0 +1,11 @@
+name = "judge-error-fallback"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+rules = [
+  { type = "Text", globs = ["**/*.html"], fallthrough = false }
+]
+
+routes = [
+  { pattern = "judge.riefproject.my.id/*", zone_name = "riefproject.my.id" }
+]

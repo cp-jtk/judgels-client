@@ -17,3 +17,5 @@ coverage/
 # Local dev config & env
 public/var/
 .env*
+
+.wrangler/
